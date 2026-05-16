@@ -21,6 +21,7 @@ func main() {
 	}))
 
 	application := app.New(cfg, logger)
+	defer application.Close()
 
 	server := &http.Server{
 		Addr:              cfg.HTTPAddr,

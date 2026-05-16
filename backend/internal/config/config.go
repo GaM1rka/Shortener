@@ -10,6 +10,7 @@ type Config struct {
 	HTTPAddr      string
 	PublicBaseURL string
 	CodeLength    int
+	DatabaseURL   string
 	LogLevel      slog.Level
 }
 
@@ -18,6 +19,7 @@ func Load() Config {
 		HTTPAddr:      env("HTTP_ADDR", ":8080"),
 		PublicBaseURL: env("PUBLIC_BASE_URL", "http://localhost:8080"),
 		CodeLength:    envInt("SHORT_CODE_LENGTH", 7),
+		DatabaseURL:   env("DATABASE_URL", ""),
 		LogLevel:      envLogLevel("LOG_LEVEL", slog.LevelInfo),
 	}
 }
