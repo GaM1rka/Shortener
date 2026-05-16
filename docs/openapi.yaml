@@ -1,0 +1,221 @@
+openapi: 3.0.3
+info:
+  title: Shortener API
+  version: 1.0.0
+  description: URL shortener service with redirect analytics.
+servers:
+  - url: http://localhost:8080
+tags:
+  - name: links
+    description: Short link operations
+  - name: analytics
+    description: Click analytics
+paths:
+  /healthz:
+    get:
+      tags:
+        - links
+      summary: Health check
+      responses:
+        "200":
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+  /shorten:
+    post:
+      tags:
+        - links
+      summary: Create a short link
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ShortenRequest"
+            examples:
+              generated:
+                summary: Generated alias
+                value:
+                  url: https://example.com/landing?page=summer
+              custom:
+                summary: Custom alias
+                value:
+                  url: https://example.com/docs
+                  custom_alias: docs
+      responses:
+        "201":
+          description: Short link created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Link"
+        "400":
+          description: Invalid URL or alias
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: Custom alias already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /s/{short_url}:
+    get:
+      tags:
+        - links
+      summary: Redirect by short code
+      parameters:
+        - $ref: "#/components/parameters/ShortURL"
+      responses:
+        "302":
+          description: Redirect to original URL
+          headers:
+            Location:
+              description: Original URL
+              schema:
+                type: string
+                format: uri
+        "404":
+          description: Short URL not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /analytics/{short_url}:
+    get:
+      tags:
+        - analytics
+      summary: Get short link analytics
+      parameters:
+        - $ref: "#/components/parameters/ShortURL"
+      responses:
+        "200":
+          description: Analytics payload
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Analytics"
+        "404":
+          description: Short URL not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+components:
+  parameters:
+    ShortURL:
+      name: short_url
+      in: path
+      required: true
+      schema:
+        type: string
+        example: docs
+  schemas:
+    ShortenRequest:
+      type: object
+      required:
+        - url
+      properties:
+        url:
+          type: string
+          format: uri
+          example: https://example.com/docs
+        custom_alias:
+          type: string
+          minLength: 3
+          maxLength: 64
+          pattern: "^[A-Za-z0-9_-]{3,64}$"
+          example: docs
+    Link:
+      type: object
+      properties:
+        id:
+          type: string
+          example: 8f05a0625597b6a848caed33f7f955c8
+        original_url:
+          type: string
+          format: uri
+          example: https://example.com/docs
+        short_code:
+          type: string
+          example: docs
+        short_url:
+          type: string
+          format: uri
+          example: http://localhost:8080/s/docs
+        created_at:
+          type: string
+          format: date-time
+    Click:
+      type: object
+      properties:
+        id:
+          type: string
+        link_id:
+          type: string
+        short_code:
+          type: string
+        user_agent:
+          type: string
+          example: Mozilla/5.0
+        ip:
+          type: string
+          example: 127.0.0.1
+        clicked_at:
+          type: string
+          format: date-time
+    Bucket:
+      type: object
+      properties:
+        key:
+          type: string
+          example: "2026-05-16"
+        count:
+          type: integer
+          example: 3
+    Analytics:
+      type: object
+      properties:
+        short_code:
+          type: string
+          example: docs
+        original_url:
+          type: string
+          format: uri
+          example: https://example.com/docs
+        total_clicks:
+          type: integer
+          example: 12
+        clicks:
+          type: array
+          items:
+            $ref: "#/components/schemas/Click"
+        by_day:
+          type: array
+          items:
+            $ref: "#/components/schemas/Bucket"
+        by_month:
+          type: array
+          items:
+            $ref: "#/components/schemas/Bucket"
+        by_user_agent:
+          type: array
+          items:
+            $ref: "#/components/schemas/Bucket"
+        generated_at:
+          type: string
+          format: date-time
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          example: short url not found
