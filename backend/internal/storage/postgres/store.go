@@ -34,6 +34,10 @@ func (s *Store) Close() {
 	s.pool.Close()
 }
 
+func (s *Store) Pool() *pgxpool.Pool {
+	return s.pool
+}
+
 func (s *Store) CreateLink(ctx context.Context, link domain.Link) error {
 	const query = `
 		INSERT INTO links (id, original_url, short_code, short_url, created_at)

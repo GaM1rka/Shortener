@@ -8,6 +8,7 @@ import (
 
 	"shortener/backend/internal/config"
 	"shortener/backend/internal/httpapi"
+	"shortener/backend/internal/migrations"
 	"shortener/backend/internal/service"
 	"shortener/backend/internal/storage/memory"
 	"shortener/backend/internal/storage/postgres"
@@ -31,9 +32,15 @@ func New(cfg config.Config, logger *slog.Logger) *App {
 			logger.Error("postgres unavailable, falling back to in-memory storage", "error", err)
 			store = memory.New()
 		} else {
-			logger.Info("postgres storage enabled")
-			store = postgresStore
-			closeStore = postgresStore.Close
+			if err := migrations.Up(ctx, postgresStore.Pool(), cfg.MigrationsDir); err != nil {
+				logger.Error("migrations failed, falling back to in-memory storage", "error", err)
+				postgresStore.Close()
+				store = memory.New()
+			} else {
+				logger.Info("postgres storage enabled")
+				store = postgresStore
+				closeStore = postgresStore.Close
+			}
 		}
 	} else {
 		logger.Info("in-memory storage enabled")

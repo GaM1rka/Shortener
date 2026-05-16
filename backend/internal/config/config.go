@@ -11,6 +11,8 @@ type Config struct {
 	PublicBaseURL string
 	CodeLength    int
 	DatabaseURL   string
+	RedisURL      string
+	MigrationsDir string
 	LogLevel      slog.Level
 }
 
@@ -20,6 +22,8 @@ func Load() Config {
 		PublicBaseURL: env("PUBLIC_BASE_URL", "http://localhost:8080"),
 		CodeLength:    envInt("SHORT_CODE_LENGTH", 7),
 		DatabaseURL:   env("DATABASE_URL", ""),
+		RedisURL:      env("REDIS_URL", ""),
+		MigrationsDir: env("MIGRATIONS_DIR", "./migrations"),
 		LogLevel:      envLogLevel("LOG_LEVEL", slog.LevelInfo),
 	}
 }
