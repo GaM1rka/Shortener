@@ -10,6 +10,7 @@ URL shortener service with redirect analytics. The backend is written in Go and 
 - Supports custom aliases with letters, numbers, `_`, and `-`.
 - Stores links and clicks in Postgres when `DATABASE_URL` is set.
 - Falls back to in-memory storage for quick local runs without infrastructure.
+- Serves a simple browser UI for creating links and viewing analytics.
 - Docker Compose includes backend, Postgres, and Redis.
 
 ## Project Structure
@@ -27,6 +28,10 @@ backend/
   migrations/             SQL migrations
 docs/
   openapi.yaml            OpenAPI 3.0 spec
+frontend/
+  index.html              browser UI
+  app.js
+  styles.css
 docker-compose.yml
 ```
 
@@ -39,6 +44,8 @@ docker compose up --build
 The service listens on `http://localhost:8080`.
 
 Postgres migrations are applied automatically by the backend container on startup.
+
+Open the UI at `http://localhost:8080`.
 
 ## Run Backend Locally
 
@@ -68,6 +75,7 @@ go run ./cmd/shortener
 | `DATABASE_URL` | empty | Postgres connection string |
 | `REDIS_URL` | empty | Reserved for Redis caching |
 | `MIGRATIONS_DIR` | `./migrations` | Directory with `*.up.sql` files |
+| `FRONTEND_DIR` | `../frontend` | Directory with static UI files |
 | `LOG_LEVEL` | `info` | `debug`, `info`, `warn`, or `error` |
 
 ## API Examples

@@ -53,7 +53,7 @@ func New(cfg config.Config, logger *slog.Logger) *App {
 	})
 
 	return &App{
-		handler: httpapi.NewRouter(shortener, logger),
+		handler: httpapi.NewRouter(shortener, logger, cfg.FrontendDir),
 		close:   closeStore,
 	}
 }

@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Shortener</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <main class="shell">
+      <section class="workspace">
+        <div class="topbar">
+          <div>
+            <p class="eyebrow">Shortener</p>
+            <h1>URL shortener with analytics</h1>
+          </div>
+          <div class="status" id="apiStatus">Checking API...</div>
+        </div>
+
+        <section class="panel">
+          <form id="shortenForm" class="form">
+            <label>
+              Original URL
+              <input id="urlInput" name="url" type="url" placeholder="https://example.com/page" required>
+            </label>
+            <label>
+              Custom alias
+              <input id="aliasInput" name="custom_alias" type="text" placeholder="optional">
+            </label>
+            <button type="submit">Create short link</button>
+          </form>
+
+          <div class="result" id="result" hidden>
+            <span>Short link</span>
+            <div class="result-row">
+              <a id="shortUrl" href="#" target="_blank" rel="noreferrer"></a>
+              <button id="copyButton" type="button">Copy</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <form id="analyticsForm" class="form compact">
+            <label>
+              Short code
+              <input id="analyticsCode" type="text" placeholder="abc123 or custom alias" required>
+            </label>
+            <button type="submit">Load analytics</button>
+          </form>
+
+          <div class="analytics-grid">
+            <div class="metric">
+              <span>Total clicks</span>
+              <strong id="totalClicks">0</strong>
+            </div>
+            <div class="metric">
+              <span>Original URL</span>
+              <a id="originalUrl" href="#" target="_blank" rel="noreferrer">No link loaded</a>
+            </div>
+          </div>
+
+          <div class="tables">
+            <section>
+              <h2>By day</h2>
+              <div id="byDay" class="bucket-list empty">No data</div>
+            </section>
+            <section>
+              <h2>By User-Agent</h2>
+              <div id="byUserAgent" class="bucket-list empty">No data</div>
+            </section>
+          </div>
+
+          <section>
+            <h2>Recent clicks</h2>
+            <div id="clicks" class="click-list empty">No data</div>
+          </section>
+        </section>
+      </section>
+    </main>
+
+    <div id="toast" class="toast" hidden></div>
+    <script src="/app.js"></script>
+  </body>
+</html>

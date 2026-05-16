@@ -13,6 +13,7 @@ type Config struct {
 	DatabaseURL   string
 	RedisURL      string
 	MigrationsDir string
+	FrontendDir   string
 	LogLevel      slog.Level
 }
 
@@ -24,6 +25,7 @@ func Load() Config {
 		DatabaseURL:   env("DATABASE_URL", ""),
 		RedisURL:      env("REDIS_URL", ""),
 		MigrationsDir: env("MIGRATIONS_DIR", "./migrations"),
+		FrontendDir:   env("FRONTEND_DIR", "../frontend"),
 		LogLevel:      envLogLevel("LOG_LEVEL", slog.LevelInfo),
 	}
 }
